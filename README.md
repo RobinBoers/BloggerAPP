@@ -11,7 +11,7 @@ Webapp to manage, create and publish blogposts, using blogspot. It uses the [Goo
 2. Copy the files over to your server
 3. Go to [https://console.developers.google.com/](https://console.developers.google.com/)
 4. Add an project, and tap "Credentials"
-5. Tap "Create data" and add a Client-ID OAuth
+5. Tap "Create data" and create an Client-ID OAuth
 6. Choose the "Webapp" and enter the path to the files you just copied in the "Authorized diversion URIs" textbox
 7. Hit create, and hit ok.
 8. Click on the Client-ID you just generated.
