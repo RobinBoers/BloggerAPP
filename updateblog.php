@@ -7,22 +7,30 @@ session_start();
 // Set redirectUri to this script
 $redirect_uri = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
 
+// Add Google Client
 $client = new Google_Client();
-$client->setAuthConfig('client_secret_880444620094-cv72kevkvuhekou8pjma02k5sd60t8bu.apps.googleusercontent.com.json');
+$client->setAuthConfig('client_secret.json');
 $client->setApplicationName('Bloggr');
 $client->setRedirectUri($redirect_uri);
 $client->setScopes(array('https://www.googleapis.com/auth/blogger')); 
 
+// If the users is logged in succesfully, we can do cool stuff!
 if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
+    
+    // First set the accesstoken
     $client->setAccessToken($_SESSION['access_token']);
     
-    // Do things
+    // The cool stuff!
     $blogger = new Google_Service_Blogger($client);
     
     if(isset($_POST['blogid'])) {
+        
+        // Getting bloginformation from the API
         $blogId = $_POST['blogid'];
         $blog = $blogger->blogs->get($blogId);
         $blogName  = $blog->getName();
+        
+        // Sitenavigation
         echo"<div class='sidenav'>
                 <h2><img class='logo' src='bloggerlogo.png'>Bloggr</h2>
                 <a href='index.php?blogid=$blogId'>Posts</a>
@@ -36,28 +44,60 @@ if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
         echo "<main>";
         echo "<h2>Current blog: <span>$blogName</span></h2>";
         if(isset($_POST['postid']) && isset($_POST['title']) && isset($_POST['content'])) {
+            
+            // Getting postinformation from the API
             $postId = $_POST['postid'];
             $post = $blogger->posts->get($blogId, $postId);
+            
+            // Creating post
             $mypost = new Google_Service_Blogger_Post();
             $mypost->setTitle($_POST['title']);
             $mypost->setContent($_POST['content']);
 
-            $data = $blogger->posts->update($blogId, $postId, $mypost);
-            var_dump($data);
+            // Choosing action
+            if(isset($_POST['revert'])) {
+                
+                // Check if it works
+                echo "Reverted";
+                
+                // Revert blogpost to draft
+                $data = $blogger->posts->update($blogId, $postId, $mypost); 
+                $data = $blogger->posts->revert($blogId, $postId); 
+                var_dump($data);
+            } 
+            else if(isset($_POST['deleted'])) {
+                
+                // Check if it works
+                echo "Deleted";
+                
+                // Delete blogpost
+                $data = $blogger->posts->delete($blogId, $postId); 
+                var_dump($data);
+            } 
+            else if(isset($_POST['update'])) {
+                
+                // Check if it works
+                echo "Updated";
+                
+                // Update blogpost
+                $data = $blogger->posts->update($blogId, $postId, $mypost);
+                var_dump($data);
+            } 
+            else if(isset($_POST['draft'])) {
+                
+                // Check if it works
+                echo "Back to draft";
+                
+                // Update draft blogpost
+                $mypost->isDraft(true);
+                $data = $blogger->posts->update($blogId, $postId, $mypost);
+                var_dump($data);
+            }
         }
     } 
     else {
         echo "<p>Er is helaas iets foutgegaan... :-(<br><a href='index.php'>Terug</a>";
     }
-    
-    
-    //creates a post object
-//    $mypost = new Google_Service_Blogger_Post();
-//    $mypost->setTitle('this is a test 1 title');
-//    $mypost->setContent('this is a test 1 content');
-//
-//    $data = $blogger->posts->insert('7969045034789594187', $mypost); //post id needs here - put your blogger blog id
-//     var_dump($data);
 
 } else {
     header('Location: index.php');

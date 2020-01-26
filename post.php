@@ -7,22 +7,30 @@ session_start();
 // Set redirectUri to this script
 $redirect_uri = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
 
+// Add Google Client
 $client = new Google_Client();
-$client->setAuthConfig('client_secret_880444620094-cv72kevkvuhekou8pjma02k5sd60t8bu.apps.googleusercontent.com.json');
+$client->setAuthConfig('client_secret.json');
 $client->setApplicationName('Bloggr');
 $client->setRedirectUri($redirect_uri);
 $client->setScopes(array('https://www.googleapis.com/auth/blogger')); 
 
+// If the users is logged in succesfully, we can do cool stuff!
 if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
+    
+    // First set the accesstoken
     $client->setAccessToken($_SESSION['access_token']);
     
-    // Do things
+    // The cool stuff!
     $blogger = new Google_Service_Blogger($client);
     
     if(isset($_GET['blogid'])) {
+        
+        // Getting bloginformation from the API
         $blogId = $_GET['blogid'];
         $blog = $blogger->blogs->get($blogId);
         $blogName  = $blog->getName();
+        
+        // Sitenavigation
         echo"<div class='sidenav'>
                 <h2><img class='logo' src='bloggerlogo.png'>Bloggr</h2>
                 <a href='index.php?blogid=$blogId'>Posts</a>
@@ -35,16 +43,22 @@ if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
         echo "<link href='css/main.css' rel='stylesheet' type='text/css'>";
         echo "<main>";
         echo "<h2>Current blog: <span>$blogName</span></h2>";
+        
+        
         if(isset($_GET['postid'])) {
+            
+            // Getting postinformation from API
             $postId = $_GET['postid'];
             $post = $blogger->posts->get($blogId, $postId);
+            
+            // Showing editor
             echo "<h1 class='robin-title' contenteditable='true'>".$post->title."</h1>";
             echo "<p>By ".$post->author->displayName." <button onclick='submit()'>Update</button> <button onclick='revert()'>Revert to draft</button> <button onclick='deleted()'>Delete</button></p>";
             ?>
-                <!-- Include stylesheet -->
+                <!-- Include stylesheet for Quill  -->
                 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
-                <!-- Create the editor container -->
+                <!-- Create the editor container for Quill  -->
                 <div id="editor">
                   <?php echo $post->content ?>
                 </div>
@@ -52,24 +66,32 @@ if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
                 <!-- Include the Quill library -->
                 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
-                <form style="display:none !important;" class="robinform" action="updateblog.php" method="post">
-                    <input id="robintitle" type="text" name="title">
-                    <input id="robincontent" type="text" name="content">
-                    <input id="robinblogid" type="text" name="blogid">
-                    <input id="robinpostid" type="text" name="postid">
-                    <input type="submit" name="cool">
+                <!-- Forms to send data to the script that updates, or posts blogposts -->
+                <form style="display:none !important;" class="updateform" action="updateblog.php" method="post">
+                    <input id="updatetitle" type="text" name="title">
+                    <input id="updatecontent" type="text" name="content">
+                    <input id="updateblogid" type="text" name="blogid">
+                    <input id="updatepostid" type="text" name="postid">
+                    <input id="update" type="text" name="update">
+                    <input type="submit" name="update2">
                 </form>
 
-                <form style="display:none !important;" class="revertform" action="revertblog.php" method="post">
+                <form style="display:none !important;" class="revertform" action="updateblog.php" method="post">
+                    <input id="reverttitle" type="text" name="title">
+                    <input id="revertcontent" type="text" name="content">
                     <input id="revertblogid" type="text" name="blogid">
                     <input id="revertpostid" type="text" name="postid">
-                    <input type="submit" name="cool">
+                    <input id="revert" type="text" name="revert">
+                    <input type="submit" name="revert2">
                 </form>
 
-                <form style="display:none !important;" class="delform" action="deleteblog.php" method="post">
+                <form style="display:none !important;" class="delform" action="updateblog.php" method="post">
+                    <input id="deltitle" type="text" name="title">
+                    <input id="delcontent" type="text" name="content">
                     <input id="delblogid" type="text" name="blogid">
                     <input id="delpostid" type="text" name="postid">
-                    <input type="submit" name="cool">
+                    <input id="delete" type="hidden" value="deleted" name="deleted">
+                    <input type="submit" name="deleted2">
                 </form>
 
                 <!-- Initialize Quill editor -->
@@ -78,15 +100,17 @@ if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
                         theme: 'snow'
                     });
                     function submit() {
-                        document.querySelector("#robincontent").value = document.querySelector(".ql-editor").innerHTML;
-                        document.querySelector("#robintitle").value = document.querySelector(".robin-title").innerHTML;
-                        document.querySelector("#robinblogid").value = "<?php echo $blogId ?>";
-                        document.querySelector("#robinpostid").value = "<?php echo $postId ?>";
+                        document.querySelector("#updatecontent").value = document.querySelector(".ql-editor").innerHTML;
+                        document.querySelector("#updatetitle").value = document.querySelector(".robin-title").innerHTML;
+                        document.querySelector("#updateblogid").value = "<?php echo $blogId ?>";
+                        document.querySelector("#updatepostid").value = "<?php echo $postId ?>";
                         console.log("konijn");
                         
-                        document.querySelector(".robinform").submit();
+                        document.querySelector(".updateform").submit();
                     }
                     function revert() {
+                        document.querySelector("#revertcontent").value = document.querySelector(".ql-editor").innerHTML;
+                        document.querySelector("#reverttitle").value = document.querySelector(".robin-title").innerHTML;
                         document.querySelector("#revertblogid").value = "<?php echo $blogId ?>";
                         document.querySelector("#revertpostid").value = "<?php echo $postId ?>";
                         console.log("konijn2");

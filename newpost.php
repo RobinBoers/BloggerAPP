@@ -7,23 +7,31 @@ session_start();
 // Set redirectUri to this script
 $redirect_uri = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
 
+// Add Google Client
 $client = new Google_Client();
-$client->setAuthConfig('client_secret_880444620094-cv72kevkvuhekou8pjma02k5sd60t8bu.apps.googleusercontent.com.json');
+$client->setAuthConfig('client_secret.json');
 $client->setApplicationName('Bloggr');
 $client->setRedirectUri($redirect_uri);
 $client->setScopes(array('https://www.googleapis.com/auth/blogger')); 
 
+// If the users is logged in succesfully, we can do cool stuff!
 if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
+    
+    // First set the accesstoken
     $client->setAccessToken($_SESSION['access_token']);
     
-    // Do things
+    // The cool stuff!
     $blogger = new Google_Service_Blogger($client);
     
     if(isset($_GET['blogid'])) {
+        
+        // Getting bloginformation from the API
         $blogId = $_GET['blogid'];
         $blog = $blogger->blogs->get($blogId);
         $blogName  = $blog->getName();
         $user = $blogger->users->get('self');
+        
+        // Sitenavigation
         echo"<div class='sidenav'>
                 <h2><img class='logo' src='bloggerlogo.png'>Bloggr</h2>
                 <a href='index.php?blogid=$blogId'>Posts</a>
@@ -39,10 +47,10 @@ if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
         echo "<h1 class='robin-title' contenteditable='true'>Add title</h1>";
         echo "<p>By ".$user->displayName." <button onclick='submit()'>Publish</button> <button onclick='draft()'>Save as draft</button></p>";
         ?>
-            <!-- Include stylesheet -->
+            <!-- Include stylesheet for Quill -->
             <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
-            <!-- Create the editor container -->
+            <!-- Create the editor container for Quill -->
             <div id="editor">
             
             </div>
@@ -50,11 +58,13 @@ if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
             <!-- Include the Quill library -->
             <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
-            <form style="display:none !important;" class="robinform" action="postblog.php" method="post">
-                <input id="robintitle" type="text" name="title">
-                <input id="robincontent" type="text" name="content">
-                <input id="robinblogid" type="text" name="blogid">
-                <input type="submit" name="cool">
+
+            <!-- Forms to send data to the script that updates, or posts blogposts -->
+            <form style="display:none !important;" class="postform" action="postblog.php" method="post">
+                <input id="posttitle" type="text" name="title">
+                <input id="postcontent" type="text" name="content">
+                <input id="postblogid" type="text" name="blogid">
+                <input type="submit" name="post">
             </form>
 
             <form style="display:none !important;" class="draftform" action="postblog.php" method="post">
@@ -70,13 +80,14 @@ if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
                 var quill = new Quill('#editor', {
                     theme: 'snow'
                 });
+                
                 function submit() {
-                    document.querySelector("#robincontent").value = document.querySelector(".ql-editor").innerHTML;
-                    document.querySelector("#robintitle").value = document.querySelector(".robin-title").innerHTML;
-                    document.querySelector("#robinblogid").value = "<?php echo $blogId ?>";
+                    document.querySelector("#postcontent").value = document.querySelector(".ql-editor").innerHTML;
+                    document.querySelector("#posttitle").value = document.querySelector(".robin-title").innerHTML;
+                    document.querySelector("#postblogid").value = "<?php echo $blogId ?>";
                     console.log("konijn");
 
-                    document.querySelector(".robinform").submit();
+                    document.querySelector(".postform").submit();
                 }
                 function draft() {
                     document.querySelector("#draftblogid").value = "<?php echo $blogId ?>";
@@ -93,15 +104,4 @@ if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
 else {
     echo "<p>Er is helaas iets foutgegaan... :-(";
 }
-
-
-//creates a post object
-//    $mypost = new Google_Service_Blogger_Post();
-//    $mypost->setTitle('this is a test 1 title');
-//    $mypost->setContent('this is a test 1 content');
-//
-//    $data = $blogger->posts->insert('7969045034789594187', $mypost); //post id needs here - put your blogger blog id
-//     var_dump($data);
-
-
 ?>
