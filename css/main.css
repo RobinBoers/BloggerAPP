@@ -1,0 +1,93 @@
+/* MAIN */
+body {
+    font-family: sans-serif;
+    margin: 0;
+}
+main {
+    margin-top: 30px;
+    margin-left: 200px;
+    width: 80%;
+    padding: 0px 10px;
+}
+a {
+    text-decoration: none;
+    color: royalblue;
+}
+a:visited {
+    color:royalblue;
+}
+.logo-left {
+    height: 50px;
+    margin-right:10px;
+    margin-bottom:10px;
+    float:left;
+}
+.logo {
+    height: 50px;
+    margin-right:10px;
+    margin-bottom:10px;
+/*    float:left;*/
+}
+h1 span, h2 span, h3 span, h4 span, h5 span, h6 span {
+    font-weight: normal;
+}
+
+/* SIDEBAR */
+.sidenav {
+  height: 100%;
+  width: 160px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: lightgrey;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+.sidenav h2 {
+  padding: 6px 8px 6px 16px;
+}
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+}
+.sidenav a:hover {
+  color: orange;
+}
+
+/* FORMS */
+label {
+    display:block;
+    font-size:16px;
+}
+input {
+    margin:5px;
+    margin-left:0px;
+    margin-top:10px;
+    padding: 10px;
+    border-radius:7px;
+    border:2px solid royalblue;
+}
+
+/* POSTLIST */
+.postTitle {display: inline;font-weight:bolder;color:darkorange;}
+.postAuthor {display: inline;}
+.postItem {text-decoration: none;color:black;}
+.postItem:visited {text-decoration: none;color:black;}
+.postList {
+    margin:0;
+    padding-inline-start: 0px;
+}
+.postList li {
+    height: 50px;
+    border: 1px solid grey;
+    border-radius: 7px;
+    list-style: none;
+    margin: 20px;
+    background-color: lightgrey;
+    padding: 20px;
+    margin-left: 0;
+}
