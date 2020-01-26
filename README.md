@@ -2,7 +2,11 @@
 Webapp to manage, create and publish blogposts, using blogspot. It uses the [Google Client Library for PHP](https://github.com/googleapis/google-api-php-client "Google Client Library for PHP") to manage your Blogger account
 
 ## Features
-- Manage posts: Publish, create drafts or delete posts 
+- Manage posts: Publish, or delete posts 
+
+### Work in progress
+These features will be available soon:
+- Create drafts
 - Manage comments: Delete, aprove and add comments
 - Download posts and comments as HTML files for an save backup
 
